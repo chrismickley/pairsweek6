@@ -1,15 +1,15 @@
 package com.techelevator.projects.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Employee {
 	private Long employeeId;
 	private Long departmentId;
 	private String firstName;
 	private String lastName;
-	private LocalDate birthDay;
+	private Date birthDay;
 	private char gender;
-	private LocalDate hireDate;
+	private Date hireDate;
 	
 	public Long getId() {
 		return employeeId;
@@ -35,10 +35,10 @@ public class Employee {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public LocalDate getBirthDay() {
+	public Date getBirthDay() {
 		return birthDay;
 	}
-	public void setBirthDay(LocalDate birthDay) {
+	public void setBirthDay(Date birthDay) {
 		this.birthDay = birthDay;
 	}
 	public char getGender() {
@@ -47,10 +47,10 @@ public class Employee {
 	public void setGender(char gender) {
 		this.gender = gender;
 	}
-	public LocalDate getHireDate() {
+	public Date getHireDate() {
 		return hireDate;
 	}
-	public void setHireDate(LocalDate hireDate) {
+	public void setHireDate(Date hireDate) {
 		this.hireDate = hireDate;
 	}
 	public String toString() {

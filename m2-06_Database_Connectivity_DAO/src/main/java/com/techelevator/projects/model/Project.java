@@ -1,12 +1,13 @@
 package com.techelevator.projects.model;
 
-import java.time.LocalDate;
+
+import java.util.Date;
 
 public class Project {
 	private Long id;
 	private String name;
-	private LocalDate startDate;
-	private LocalDate endDate;
+	private Date startDate;
+	private Date endDate;
 	
 	public Long getId() {
 		return id;
@@ -20,16 +21,16 @@ public class Project {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public LocalDate getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(LocalDate startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	public LocalDate getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(LocalDate endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 	public String toString() {
