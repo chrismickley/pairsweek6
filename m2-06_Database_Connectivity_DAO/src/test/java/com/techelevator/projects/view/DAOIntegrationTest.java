@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import com.techelevator.projects.model.jdbc.JDBCProjectDAO;
+
 public abstract class DAOIntegrationTest {
 
 	/* Using this particular implementation of DataSource so that
@@ -36,6 +38,8 @@ public abstract class DAOIntegrationTest {
 	/* After all tests have finished running, this method will close the DataSource */
 	@AfterClass
 	public static void closeDataSource() throws SQLException {
+	//
+		dataSource.getConnection().close();
 		dataSource.destroy();
 	}
 	
@@ -59,4 +63,8 @@ public abstract class DAOIntegrationTest {
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
+//	@Before
+//	public void setupTest () {
+//		dao = new JDBCProjectDAO (dataSource);
+//	}
 }

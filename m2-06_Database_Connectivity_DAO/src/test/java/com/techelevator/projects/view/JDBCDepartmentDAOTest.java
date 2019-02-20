@@ -19,6 +19,8 @@ public class JDBCDepartmentDAOTest extends DAOIntegrationTest {
 	public void setup() {
 		testing = new JDBCDepartmentDAO(getDataSource());
 	}
+	
+
 
 	@Test
 	public void getAllDepartments_ShouldReturnFullAmountOfDepartments_WhenDataIsValid() {
