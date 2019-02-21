@@ -1,13 +1,14 @@
 package com.techelevator.campground.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Park
 {
 	private Long parkId;
 	private String name;
 	private String location;
-	private LocalDate establishDate;
+	private Date establishDate;
 	private Long area;
 	private Long visitors;
 	private String description;
@@ -42,12 +43,12 @@ public class Park
 		this.location = location;
 	}
 
-	public LocalDate getEstablishDate()
+	public Date getEstablishDate()
 	{
 		return establishDate;
 	}
 
-	public void setEstablishDate(LocalDate establishDate)
+	public void setEstablishDate(Date establishDate)
 	{
 		this.establishDate = establishDate;
 	}
