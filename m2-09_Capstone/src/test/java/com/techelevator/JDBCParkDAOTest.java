@@ -27,10 +27,13 @@ public class JDBCParkDAOTest extends DAOIntegrationTest {
 
 	@Test
 	public void listAllParksTest() {
-		List<Park> parkList = testing.listAllParks();
 		jdbcTemplate = new JdbcTemplate(getDataSource());
+
 		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from park");
 		result.next();
+
+		List<Park> parkList = testing.listAllParks();
+
 		assertEquals(result.getInt("total"), parkList.size());
 	}
 
@@ -38,22 +41,26 @@ public class JDBCParkDAOTest extends DAOIntegrationTest {
 	public void displayParkInfoTest() throws Exception {
 		Date establishDate = formatDate.parse("1968-01-15");
 		jdbcTemplate = new JdbcTemplate(getDataSource());
+
 		SqlRowSet nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM park");
 		nextId.next();
-		Long parkId = nextId.getLong(1) + 1;
-		String statement = "INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES ("
-				+ parkId + ", 'Crazy Park', 'Ohio','1968-01-15', 54321, 9999999, 'Something for description.')";
+
+		Long nextParkId = nextId.getLong(1) + 1;
+
+		String statement = "INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES (" +
+				nextParkId + ", 'Crazy Park', 'Ohio','1968-01-15', 54321, 9999999, 'Something for description.')";
 		jdbcTemplate.execute(statement);
 
 		Park thePark = new Park();
-		thePark.setParkId(parkId);
+		thePark.setParkId(nextParkId);
 		thePark.setName("Crazy Park");
 		thePark.setLocation("Ohio");
 		thePark.setEstablishDate(establishDate);
 		thePark.setArea((long) 54321);
 		thePark.setVisitors((long) 9999999);
 		thePark.setDescription("Something for description.");
-		assertParksAreEqual(thePark, testing.displayParkInfo(parkId));
+
+		assertParksAreEqual(thePark, testing.displayParkInfo(nextParkId));
 	}
 
 	private void assertParksAreEqual(Park expected, Park actual) {
@@ -64,6 +71,5 @@ public class JDBCParkDAOTest extends DAOIntegrationTest {
 		assertEquals(expected.getArea(), actual.getArea());
 		assertEquals(expected.getVisitors(), actual.getVisitors());
 		assertEquals(expected.getDescription(), actual.getDescription());
-
 	}
 }

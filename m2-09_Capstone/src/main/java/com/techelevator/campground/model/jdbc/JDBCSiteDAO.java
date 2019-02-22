@@ -13,6 +13,7 @@ import com.techelevator.campground.model.Site;
 import com.techelevator.campground.model.SiteDAO;
 
 public class JDBCSiteDAO implements SiteDAO {
+
 	private JdbcTemplate jdbcTemplate;
 
 	public JDBCSiteDAO(DataSource dataSource) {

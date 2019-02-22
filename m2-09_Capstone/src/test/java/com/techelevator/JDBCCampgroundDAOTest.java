@@ -25,26 +25,33 @@ public class JDBCCampgroundDAOTest extends DAOIntegrationTest {
 	public void listAllCampgroundsTest() {
 		jdbcTemplate = new JdbcTemplate(getDataSource());
 		SqlRowSet nextId;
+
 		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM park");
 		nextId.next();
-		Long parkId = nextId.getLong(1) + 1;
+		Long nextParkId = nextId.getLong(1) + 1;
+
 		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM campground");
 		nextId.next();
-		Long campGroundId = nextId.getLong(1) + 1;
+		Long nextCampgroundId = nextId.getLong(1) + 1;
+		Long nextCampgroundIdPlusOne = nextCampgroundId + 1;
+
 		jdbcTemplate.execute(
 				"INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES (" +
-						parkId + ",'Crazy Park', 'Ohio','1968-01-15', '54321', 9999999, 'Something for description.')");
+						nextParkId +
+						",'Crazy Park', 'Ohio','1968-01-15', '54321', 9999999, 'Something for description.')");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						campGroundId + ", " + parkId + ", 'Some Park', '01', '11', 25.00)");
+						nextCampgroundId + ", " + nextParkId + ", 'Some Park', '01', '11', 25.00)");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						(campGroundId + 1) + ", " + parkId + ",  'Someother Park', '01', '11', 25.00)");
-		List<Campground> campgroundList = testing.listAllCampgrounds(parkId);
+						nextCampgroundIdPlusOne + ", " + nextParkId + ",  'Someother Park', '01', '11', 25.00)");
 
 		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from campground WHERE park_id = ?",
-				parkId);
+				nextParkId);
 		result.next();
+
+		List<Campground> campgroundList = testing.listAllCampgrounds(nextParkId);
+
 		assertEquals(result.getInt("total"), campgroundList.size());
 	}
 }

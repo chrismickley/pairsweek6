@@ -11,12 +11,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import com.techelevator.campground.model.Campground;
 import com.techelevator.campground.model.CampgroundDAO;
 
-public class JDBCCampgroundDAO implements CampgroundDAO
-{
+public class JDBCCampgroundDAO implements CampgroundDAO {
 	private JdbcTemplate jdbcTemplate;
 
-
-	
 	public JDBCCampgroundDAO(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
@@ -26,14 +23,13 @@ public class JDBCCampgroundDAO implements CampgroundDAO
 		List<Campground> campgrounds = new ArrayList<>();
 		String name = "SELECT campground_id, name, open_from_mm, open_to_mm, daily_fee FROM campground WHERE park_id = ? ORDER BY name ASC;";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(name, parkId);
-		while(results.next()) {
+		while (results.next()) {
 			Campground theCampground = mapRowToCampground(results);
 			campgrounds.add(theCampground);
 		}
-		return  campgrounds;
+		return campgrounds;
 	}
-	
-	
+
 	private Campground mapRowToCampground(SqlRowSet results) {
 		Campground theCampground;
 		theCampground = new Campground();
@@ -43,6 +39,6 @@ public class JDBCCampgroundDAO implements CampgroundDAO
 		theCampground.setOpenToMM(results.getString("open_to_mm"));
 		theCampground.setDailyFee(results.getBigDecimal("daily_fee"));
 		return theCampground;
-	}	
+	}
 
 }
