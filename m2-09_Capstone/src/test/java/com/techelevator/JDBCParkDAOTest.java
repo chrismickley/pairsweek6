@@ -2,7 +2,6 @@ package com.techelevator;
 
 import static org.junit.Assert.*;
 
-import java.sql.PreparedStatement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,7 +53,6 @@ public class JDBCParkDAOTest extends DAOIntegrationTest {
 		thePark.setArea((long) 54321);
 		thePark.setVisitors((long) 9999999);
 		thePark.setDescription("Something for description.");
-		System.out.println(testing.displayParkInfo(parkId).getLocation());
 		assertParksAreEqual(thePark, testing.displayParkInfo(parkId));
 	}
 

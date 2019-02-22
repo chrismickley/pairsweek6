@@ -2,8 +2,6 @@ package com.techelevator;
 
 import static org.junit.Assert.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.junit.Before;
@@ -38,10 +36,10 @@ public class JDBCCampgroundDAOTest extends DAOIntegrationTest {
 						parkId + ",'Crazy Park', 'Ohio','1968-01-15', '54321', 9999999, 'Something for description.')");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						campGroundId + "," + parkId + ", 'Some Park', '01', '11', 25.00)");
+						campGroundId + ", " + parkId + ", 'Some Park', '01', '11', 25.00)");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						(campGroundId + 1) + "," + parkId + ",  'Someother Park', '01', '11', 25.00)");
+						(campGroundId + 1) + ", " + parkId + ",  'Someother Park', '01', '11', 25.00)");
 		List<Campground> campgroundList = testing.listAllCampgrounds(parkId);
 
 		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from campground WHERE park_id = ?",
