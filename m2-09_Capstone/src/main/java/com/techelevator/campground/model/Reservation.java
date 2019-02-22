@@ -1,15 +1,16 @@
 package com.techelevator.campground.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Reservation
 {
 	private Long reservationId;
 	private Long siteId;
 	private String customerName;
-	private LocalDate fromDate;
-	private LocalDate toDate;
-	private LocalDate createDate;
+	private Date fromDate;
+	private Date toDate;
+	private Date createDate;
 
 	public Long getReservationId()
 	{
@@ -41,32 +42,32 @@ public class Reservation
 		this.customerName = name;
 	}
 
-	public LocalDate getFromDate()
+	public Date getFromDate()
 	{
 		return fromDate;
 	}
 
-	public void setFromDate(LocalDate fromDate)
+	public void setFromDate(Date fromDate)
 	{
 		this.fromDate = fromDate;
 	}
 
-	public LocalDate getToDate()
+	public Date getToDate()
 	{
 		return toDate;
 	}
 
-	public void setToDate(LocalDate toDate)
+	public void setToDate(Date toDate)
 	{
 		this.toDate = toDate;
 	}
 
-	public LocalDate getCreateDate()
+	public Date getCreateDate()
 	{
 		return createDate;
 	}
 
-	public void setCreateDate(LocalDate createDate)
+	public void setCreateDate(Date createDate)
 	{
 		this.createDate = createDate;
 	}
