@@ -109,11 +109,11 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		List<Campground> camps = camp.listAllCampgrounds(parkId);
 		
 		System.out.println(parkInfo.getName() + " National Park Campgrounds\n");
-		System.out.format("%-6s %-18s %-11s %-11s %s %s", "", "Name", "Open", "Close", "Daily Fee", "\n");
+		System.out.format("%-4s %-32s %-11s %-11s %s %s", "", "Name", "Open", "Close", "Daily Fee", "\n");
 
 		if (camps.size() > 0) {
 			for (int i = 0; i < camps.size(); i++) {
-				System.out.format("%-6s %-18s %-11s %-11s %s %s", "#" + (i + 1), camps.get(i).getName(),
+				System.out.format("%-4s %-32s %-11s %-11s %s %s", "#" + (i + 1), camps.get(i).getName(),
 						camps.get(i).getOpenFromMM(), camps.get(i).getOpenToMM(),
 						"$" + camps.get(i).getDailyFee().setScale(2), "\n");
 			}

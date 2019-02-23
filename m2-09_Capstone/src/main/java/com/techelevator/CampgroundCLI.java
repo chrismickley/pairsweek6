@@ -60,7 +60,7 @@ public class CampgroundCLI {
 //			String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 //			switch (choice) {
 //			case MAIN_MENU_OPTION_PARKS:
-				parkListScreen();
+			parkListScreen();
 //			case MAIN_MENU_OPTION_EXIT:
 //				System.exit(0);
 //			}
@@ -76,11 +76,10 @@ public class CampgroundCLI {
 		String choice = getUserInput("Please choose an option");
 		if (choice.equalsIgnoreCase("Q")) {
 			System.exit(0);
-		}
-		else if (Integer.parseInt(choice) <= reserveSystem.listAllParks().size()) {
+		} else if (choice.matches("\\d+") && Integer.parseInt(choice) > 0 && Integer.parseInt(choice) <= reserveSystem.listAllParks().size()) {
 			parkInfoScreen(choice);
 		} else {
-			System.out.println("\n*** "+choice+" is not a valid option ***\n");
+			System.out.println("\n*** " + choice + " is not a valid option ***\n");
 		}
 	}
 
@@ -108,7 +107,7 @@ public class CampgroundCLI {
 		case CAMP_SEARCH_RESERVATION:
 			String campgroundId = getUserInput("Which campground (enter 0 to cancel)?");
 			if (Integer.parseInt(campgroundId) == 0) {
-				parkInfoScreen(parkId);
+				campgroundScreen(parkId);
 			}
 			String fromDate = getUserInput("What is the arrival date?");
 			String toDate = getUserInput("What is the departure date?");
