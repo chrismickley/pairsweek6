@@ -19,7 +19,8 @@ public class JDBCSiteDAO implements SiteDAO {
 	public JDBCSiteDAO(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-
+	
+	@Override
 	public List<Site> listAvailableSites(Long campgroundId, Date fromDate, Date toDate) {
 		List<Site> siteList = new ArrayList<>();
 		String name = "SELECT DISTINCT * FROM site " +

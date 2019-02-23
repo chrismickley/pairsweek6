@@ -6,11 +6,14 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import com.techelevator.campground.model.Park;
 
 public class ReservationSystemTest extends DAOIntegrationTest {
 
@@ -47,5 +50,17 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 						nextCampgroundId + ", " + nextParkId + ", 'Some Park', '01', '11', 25.00)");
 
 		assertEquals(new BigDecimal("25.00"), testing.calculateCost(nextCampgroundId, fromDate, toDate));
+	}
+	
+	@Test
+	public void listAllParksTest() {
+		jdbcTemplate = new JdbcTemplate(getDataSource());
+
+		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from park");
+		result.next();
+
+		List<Park> parkList = testing.listAllParks();
+
+		assertEquals(result.getInt("total"), parkList.size());
 	}
 }

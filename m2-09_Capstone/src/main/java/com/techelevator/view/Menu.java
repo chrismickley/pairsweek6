@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Menu {
-
+	
 	private PrintWriter out;
 	private Scanner in;
 
@@ -51,4 +51,5 @@ public class Menu {
 		out.print("\nPlease choose an option >>> ");
 		out.flush();
 	}
+	
 }
