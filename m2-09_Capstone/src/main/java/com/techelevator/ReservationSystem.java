@@ -51,28 +51,27 @@ public class ReservationSystem {
 
 	public void createReservation(Long siteNum, String customerName, Date fromDate, Date toDate) {
 		siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
-		
+
 		convertSiteNumToId();
 		siteId = siteNumToId.get(siteNum);
 
 		reservation.createReservation(siteId, customerName, fromDate, toDate);
 	}
 
-	public List<Site> listAvailableSites(int campgroundIndex, Date fromDate, Date toDate, Long parkId) {
-		campgroundId = listAllCampgrounds(parkId).get(campgroundIndex - 1).getCampgroundId();
+	public List<Site> listAvailableSites(String campgroundIndex, Date fromDate, Date toDate) {
+		convertCampIndexToId(campgroundIndex);
 
-		siteCost = calculateCost(campgroundId, fromDate, toDate);
+		calculateCost(campgroundId, fromDate, toDate);
 		if (siteCost.compareTo(new BigDecimal("0")) == 1) {
 			siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
-		}
-		else {
+		} else {
 			siteList = new ArrayList<Site>();
 		}
 		convertSiteNumToId();
 		return siteList;
 	}
 
-	public List<Campground> listAllCampgrounds(Long parkId) {
+	public List<Campground> listAllCampgrounds() {
 		return camp.listAllCampgrounds(parkId);
 	}
 
@@ -91,28 +90,32 @@ public class ReservationSystem {
 	public Map<Long, Long> getSiteNumToId() {
 		return siteNumToId;
 	}
-	
+
 	public void convertSiteNumToId() {
 		for (int i = 0; i < siteList.size(); i++) {
 			siteNumToId.put(siteList.get(i).getSiteNumber(), siteList.get(i).getSiteId());
 		}
 	}
-	
-	public Long convertParkIdToLong(String parkSelectIndex) {
+
+	public Long convertCampIndexToId(String campgroundIndex) {
+		campgroundId = camp.listAllCampgrounds(parkId).get(Integer.parseInt(campgroundIndex) - 1).getCampgroundId();
+		return campgroundId;
+	}
+
+	public Long convertParkIndexToId(String parkSelectIndex) {
 		parkId = park.listAllParks().get(Integer.parseInt(parkSelectIndex) - 1).getParkId();
 		return parkId;
 	}
 
 	public BigDecimal calculateCost(Long campgroundId, Date fromDate, Date toDate) {
-		BigDecimal cost;
 		Long dateRange = (toDate.getTime() - fromDate.getTime()) / 86400000;
 
 		SqlRowSet fee = jdbcTemplate.queryForRowSet("SELECT daily_fee FROM campground WHERE campground_id = ?",
 				campgroundId);
 		fee.next();
 
-		cost = fee.getBigDecimal(1).multiply(new BigDecimal(dateRange));
-		return cost.setScale(2);
+		siteCost = fee.getBigDecimal(1).multiply(new BigDecimal(dateRange)).setScale(2);
+		return siteCost;
 	}
 
 	public void listParkNames() {
@@ -128,7 +131,7 @@ public class ReservationSystem {
 		}
 	}
 
-	public void parkInfoOutput(Long parkId) {
+	public void parkInfoOutput() {
 		Park parkInfo = displayParkInfo(parkId);
 		String establishDate = formatDate.format(parkInfo.getEstablishDate());
 		String area = String.format("%,d", parkInfo.getArea());
@@ -149,9 +152,7 @@ public class ReservationSystem {
 		System.out.println(description);
 	}
 
-	public void listCampNames(Long parkId) {
-//		int parkId = Integer.parseInt(parkSelect);
-//		Long parkIdForCamp = Long.parseLong(parkSelect);
+	public void listCampNames() {
 		Park parkInfo = displayParkInfo(parkId);
 		List<Campground> camps = camp.listAllCampgrounds(parkId);
 

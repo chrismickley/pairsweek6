@@ -66,8 +66,8 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 
 	@Test
 	public void getReservationIdTest() throws Exception {
-		Date fromDate = formatDate.parse("1986-01-16");
-		Date toDate = formatDate.parse("1986-01-17");
+		Date fromDate = formatDate.parse("1986-01-15");
+		Date toDate = formatDate.parse("1986-01-18");
 
 		jdbcTemplate = new JdbcTemplate(getDataSource());
 		SqlRowSet nextId;
@@ -91,7 +91,7 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 		jdbcTemplate.execute(
 				"INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES (" +
 						nextParkId +
-						", 'Crazy Park', 'Ohio','1986-01-15', '54321', 9999999, 'Something for description.')");
+						", 'ZzzCrazy Park', 'Ohio','1986-01-15', '54321', 9999999, 'Something for description.')");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
 						nextCampgroundId + ", " + nextParkId + ", 'Some Camp', '01', '11', 99.00)");
@@ -105,6 +105,9 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 						nextReservationId + ", " + nextSiteId +
 						",  'Proud Family', '1986-01-15', '1986-01-18', '2019-02-20')");
 
+		testing.convertParkIndexToId(nextParkId.toString());
+		testing.listAvailableSites("1", fromDate, toDate);
+		
 		assertEquals(nextReservationId, testing.getReservationId((long) 1, fromDate, toDate));
 	}
 	
