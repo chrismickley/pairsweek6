@@ -57,21 +57,21 @@ public class JDBCSiteDAOTest extends DAOIntegrationTest {
 						", 'Crazy Park', 'Ohio','1986-01-15', '54321', 9999999, 'Something for description.')");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						nextCampgroundId + ", " + nextParkId + ", 'Some Park', '01', '11', 25.00)");
+						nextCampgroundId + ", " + nextParkId + ", 'Some Camp', '01', '11', 99.00)");
 		jdbcTemplate.execute(
 				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
-						nextSiteId + ", " + nextCampgroundId + ",  1, 6, false, 10, true)");
+						nextSiteId + ", " + nextCampgroundId + ",  1, 9, false, 11, true)");
 		jdbcTemplate.execute(
 				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
-						nextSiteIdPlusOne + ", " + nextCampgroundId + ",  2, 10, true, 20, false)");
+						nextSiteIdPlusOne + ", " + nextCampgroundId + ",  6, 19, true, 22, false)");
 		jdbcTemplate.execute(
 				"INSERT INTO reservation(reservation_id, site_id, name, from_date, to_date, create_date) VALUES(" +
 						nextReservationId + ", " + nextSiteId +
 						",  'Proud Family', '1986-01-15', '1986-01-18', '2019-02-20')");
 
-		Site theSite = setSite(nextSiteId, nextCampgroundId, (long) 1, (long) 6, false, (long) 10, true);
+		Site theSite = setSite(nextSiteId, nextCampgroundId, (long) 1, (long) 9, false, (long) 11, true);
 
-		Site theOtherSite = setSite(nextSiteIdPlusOne, nextCampgroundId, (long) 2, (long) 10, true, (long) 20, false);
+		Site theOtherSite = setSite(nextSiteIdPlusOne, nextCampgroundId, (long) 6, (long) 19, true, (long) 22, false);
 
 		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT * FROM site WHERE site_id = ?", nextSiteId);
 		result.next();

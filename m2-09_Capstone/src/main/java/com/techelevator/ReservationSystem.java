@@ -33,9 +33,13 @@ public class ReservationSystem {
 	private SiteDAO site;
 	private ReservationDAO reservation;
 	private JdbcTemplate jdbcTemplate;
-	private Long campgroundId;
-	private BigDecimal siteCost;
 	private DateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
+	private BigDecimal siteCost;
+	private Long siteId;
+	private Long campgroundId;
+	private Long parkId;
+	private List<Site> siteList = new ArrayList<Site>();
+	private Map<Long, Long> siteNumToId = new HashMap<Long, Long>();
 
 	public ReservationSystem(DataSource dataSource) {
 		this.park = new JDBCParkDAO(dataSource);
@@ -46,25 +50,26 @@ public class ReservationSystem {
 	}
 
 	public void createReservation(Long siteNum, String customerName, Date fromDate, Date toDate) {
-		List<Site> siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
-		Map<Long, Long> numToId = new HashMap<Long, Long>();
+		siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
+		
+		convertSiteNumToId();
+		siteId = siteNumToId.get(siteNum);
 
-		for (int i = 0; i < siteList.size(); i++) {
-			numToId.put(siteList.get(i).getSiteNumber(), siteList.get(i).getSiteId());
-		}
-		Long siteId = numToId.get(siteNum);
 		reservation.createReservation(siteId, customerName, fromDate, toDate);
 	}
 
-	public List<Site> listAvailableSites(int campgroundIndex, Date fromDate, Date toDate, String parkId) {
-		List<Site> confirmSite = new ArrayList<Site>();
-		campgroundId = listAllCampgrounds(Long.parseLong(parkId)).get(campgroundIndex - 1).getCampgroundId();
+	public List<Site> listAvailableSites(int campgroundIndex, Date fromDate, Date toDate, Long parkId) {
+		campgroundId = listAllCampgrounds(parkId).get(campgroundIndex - 1).getCampgroundId();
 
 		siteCost = calculateCost(campgroundId, fromDate, toDate);
 		if (siteCost.compareTo(new BigDecimal("0")) == 1) {
-			confirmSite = site.listAvailableSites(campgroundId, fromDate, toDate);
+			siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
 		}
-		return confirmSite;
+		else {
+			siteList = new ArrayList<Site>();
+		}
+		convertSiteNumToId();
+		return siteList;
 	}
 
 	public List<Campground> listAllCampgrounds(Long parkId) {
@@ -77,6 +82,25 @@ public class ReservationSystem {
 
 	public Park displayParkInfo(Long parkId) {
 		return park.displayParkInfo(parkId);
+	}
+
+	public List<Site> getSiteList() {
+		return siteList;
+	}
+
+	public Map<Long, Long> getSiteNumToId() {
+		return siteNumToId;
+	}
+	
+	public void convertSiteNumToId() {
+		for (int i = 0; i < siteList.size(); i++) {
+			siteNumToId.put(siteList.get(i).getSiteNumber(), siteList.get(i).getSiteId());
+		}
+	}
+	
+	public Long convertParkIdToLong(String parkSelectIndex) {
+		parkId = park.listAllParks().get(Integer.parseInt(parkSelectIndex) - 1).getParkId();
+		return parkId;
 	}
 
 	public BigDecimal calculateCost(Long campgroundId, Date fromDate, Date toDate) {
@@ -104,8 +128,7 @@ public class ReservationSystem {
 		}
 	}
 
-	public void parkInfoOutput(String parkSelect) {
-		Long parkId = Long.parseLong(parkSelect);
+	public void parkInfoOutput(Long parkId) {
 		Park parkInfo = displayParkInfo(parkId);
 		String establishDate = formatDate.format(parkInfo.getEstablishDate());
 		String area = String.format("%,d", parkInfo.getArea());
@@ -126,8 +149,9 @@ public class ReservationSystem {
 		System.out.println(description);
 	}
 
-	public void listCampNames(String parkSelect) {
-		Long parkId = Long.parseLong(parkSelect);
+	public void listCampNames(Long parkId) {
+//		int parkId = Integer.parseInt(parkSelect);
+//		Long parkIdForCamp = Long.parseLong(parkSelect);
 		Park parkInfo = displayParkInfo(parkId);
 		List<Campground> camps = camp.listAllCampgrounds(parkId);
 
@@ -193,7 +217,10 @@ public class ReservationSystem {
 		}
 	}
 
-	public Long returnReservationId(long siteId, Date fromDate, Date toDate) {
+	public Long getReservationId(Long siteNum, Date fromDate, Date toDate) {
+		convertSiteNumToId();
+		siteId = siteNumToId.get(siteNum);
+
 		SqlRowSet confirmation = jdbcTemplate.queryForRowSet(
 				"SELECT reservation_id FROM reservation WHERE site_id = ? AND to_date = ? and from_date = ?", siteId,
 				toDate, fromDate);

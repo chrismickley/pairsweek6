@@ -42,10 +42,10 @@ public class JDBCCampgroundDAOTest extends DAOIntegrationTest {
 						",'Crazy Park', 'Ohio','1968-01-15', '54321', 9999999, 'Something for description.')");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						nextCampgroundId + ", " + nextParkId + ", 'Some Park', '01', '11', 25.00)");
+						nextCampgroundId + ", " + nextParkId + ", 'Some Camp', '01', '11', 99.00)");
 		jdbcTemplate.execute(
 				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
-						nextCampgroundIdPlusOne + ", " + nextParkId + ",  'Someother Park', '01', '11', 25.00)");
+						nextCampgroundIdPlusOne + ", " + nextParkId + ",  'Someother Camp', '01', '11', 99.00)");
 
 		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from campground WHERE park_id = ?",
 				nextParkId);

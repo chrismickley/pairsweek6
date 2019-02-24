@@ -65,13 +65,87 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 	}
 
 	@Test
-	public void getReservationId() throws Exception {
+	public void getReservationIdTest() throws Exception {
 		Date fromDate = formatDate.parse("1986-01-16");
 		Date toDate = formatDate.parse("1986-01-17");
+
 		jdbcTemplate = new JdbcTemplate(getDataSource());
+		SqlRowSet nextId;
+
+		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM park");
+		nextId.next();
+		Long nextParkId = nextId.getLong(1) + 1;
+
+		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM campground");
+		nextId.next();
+		Long nextCampgroundId = nextId.getLong(1) + 1;
+
+		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM site");
+		nextId.next();
+		Long nextSiteId = nextId.getLong(1) + 1;
+
+		nextId = jdbcTemplate.queryForRowSet("SELECT MAX(reservation_id) FROM reservation");
+		nextId.next();
+		Long nextReservationId = nextId.getLong(1) + 1;
+
 		jdbcTemplate.execute(
-				"INSERT INTO reservation(reservation_id, site_id, name, from_date, to_date) VALUES (2100000000, 47, 'Jimmy', '1986-01-16', '1986-01-17')");
-		Long resId = (long) 2100000000;
-		assertEquals(resId, testing.returnReservationId(47, fromDate, toDate));
+				"INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES (" +
+						nextParkId +
+						", 'Crazy Park', 'Ohio','1986-01-15', '54321', 9999999, 'Something for description.')");
+		jdbcTemplate.execute(
+				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
+						nextCampgroundId + ", " + nextParkId + ", 'Some Camp', '01', '11', 99.00)");
+
+		jdbcTemplate.execute(
+				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
+						nextSiteId + ", " + nextCampgroundId + ",  1, 9, false, 11, true)");
+
+		jdbcTemplate.execute(
+				"INSERT INTO reservation(reservation_id, site_id, name, from_date, to_date, create_date) VALUES(" +
+						nextReservationId + ", " + nextSiteId +
+						",  'Proud Family', '1986-01-15', '1986-01-18', '2019-02-20')");
+
+		assertEquals(nextReservationId, testing.getReservationId((long) 1, fromDate, toDate));
 	}
+	
+//	@Test
+//	public void databaseDump() {
+//		jdbcTemplate = new JdbcTemplate(getDataSource());
+//		SqlRowSet nextId;
+//
+//		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM park");
+//		nextId.next();
+//		Long nextParkId = nextId.getLong(1) + 1;
+//
+//		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM campground");
+//		nextId.next();
+//		Long nextCampgroundId = nextId.getLong(1) + 1;
+//
+//		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM site");
+//		nextId.next();
+//		Long nextSiteId = nextId.getLong(1) + 1;
+//		Long nextSiteIdPlusOne = nextSiteId + 1;
+//		Long nextSiteIdPlusTwo = nextSiteId + 2;
+//		Long nextSiteIdPlusTre = nextSiteId + 3;
+//		
+//		jdbcTemplate.execute(
+//				"INSERT INTO park(park_id, name, location, establish_date, area, visitors, description) VALUES (" +
+//						nextParkId +
+//						", 'Crazy Park', 'Ohio','1986-01-15', '54321', 9999999, 'Something for description.')");
+//		jdbcTemplate.execute(
+//				"INSERT INTO campground(campground_id, park_id, name, open_from_mm, open_to_mm, daily_fee) VALUES(" +
+//						nextCampgroundId + ", " + nextParkId + ", 'Some Camp', '01', '11', 99.00)");
+//		jdbcTemplate.execute(
+//				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
+//						nextSiteId + ", " + nextCampgroundId + ",  1, 9, false, 11, true)");
+//		jdbcTemplate.execute(
+//				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
+//						nextSiteIdPlusOne + ", " + nextCampgroundId + ",  6, 19, true, 22, false)");
+//		jdbcTemplate.execute(
+//				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
+//						nextSiteIdPlusTwo + ", " + nextCampgroundId + ",  13, 29, true, 33, true)");
+//		jdbcTemplate.execute(
+//				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
+//						nextSiteIdPlusTre + ", " + nextCampgroundId + ",  27, 39, false, 44, false)");
+//		}
 }
