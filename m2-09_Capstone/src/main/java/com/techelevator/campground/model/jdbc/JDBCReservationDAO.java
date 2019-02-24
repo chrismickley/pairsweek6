@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.techelevator.campground.model.ReservationDAO;
 
 public class JDBCReservationDAO implements ReservationDAO {
+
 	private JdbcTemplate jdbcTemplate;
 
 	public JDBCReservationDAO(DataSource dataSource) {

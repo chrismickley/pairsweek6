@@ -16,9 +16,10 @@ import com.techelevator.campground.model.Park;
 import com.techelevator.campground.model.jdbc.JDBCParkDAO;
 
 public class JDBCParkDAOTest extends DAOIntegrationTest {
-	JDBCParkDAO testing;
-	JdbcTemplate jdbcTemplate;
-	DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+	
+	private JDBCParkDAO testing;
+	private JdbcTemplate jdbcTemplate;
+	private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Before
 	public void setUp() throws Exception {

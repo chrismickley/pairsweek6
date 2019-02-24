@@ -17,9 +17,9 @@ import com.techelevator.campground.model.jdbc.JDBCReservationDAO;
 
 public class JDBCReservationDAOTest extends DAOIntegrationTest {
 
-	JDBCReservationDAO testing;
-	JdbcTemplate jdbcTemplate;
-	DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+	private JDBCReservationDAO testing;
+	private JdbcTemplate jdbcTemplate;
+	private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Before
 	public void setUp() throws Exception {
@@ -30,7 +30,6 @@ public class JDBCReservationDAOTest extends DAOIntegrationTest {
 	public void createReservationTest() throws ParseException {
 		Date fromDate = formatDate.parse("1986-01-16");
 		Date toDate = formatDate.parse("1986-01-17");
-//		Date createDate = formatDate.parse("2019-01-22");
 
 		jdbcTemplate = new JdbcTemplate(getDataSource());
 		SqlRowSet nextId;
@@ -70,7 +69,6 @@ public class JDBCReservationDAOTest extends DAOIntegrationTest {
 		SqlRowSet checkCreateDate = jdbcTemplate.queryForRowSet("SELECT create_date FROM reservation WHERE reservation_id = ?",
 				nextReservationId);
 		checkCreateDate.next();
-//		System.out.println(nextReservationId);
 		Reservation newReservation = mapRowToReservation(checkReservations);
 		Reservation theReservation = setReservation(nextReservationId, nextSiteId, customerName, fromDate, toDate,
 				checkCreateDate.getDate(1));

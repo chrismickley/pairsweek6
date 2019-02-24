@@ -13,8 +13,9 @@ import com.techelevator.campground.model.Campground;
 import com.techelevator.campground.model.jdbc.JDBCCampgroundDAO;
 
 public class JDBCCampgroundDAOTest extends DAOIntegrationTest {
-	JDBCCampgroundDAO testing;
-	JdbcTemplate jdbcTemplate;
+
+	private JDBCCampgroundDAO testing;
+	private JdbcTemplate jdbcTemplate;
 
 	@Before
 	public void setUp() throws Exception {

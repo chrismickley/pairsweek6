@@ -17,9 +17,9 @@ import com.techelevator.campground.model.jdbc.JDBCSiteDAO;
 
 public class JDBCSiteDAOTest extends DAOIntegrationTest {
 
-	JDBCSiteDAO testing;
-	JdbcTemplate jdbcTemplate;
-	DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+	private JDBCSiteDAO testing;
+	private JdbcTemplate jdbcTemplate;
+	private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Before
 	public void setUp() throws Exception {

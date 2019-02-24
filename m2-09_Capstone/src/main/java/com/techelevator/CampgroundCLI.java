@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.sql.DataSource;
@@ -69,7 +71,9 @@ public class CampgroundCLI {
 		System.out.println("\n--------------------------------------------------");
 		System.out.println("\n---View Parks Interface---");
 		System.out.println("Select park for further details");
+
 		reserveSystem.listParkNames();
+
 		System.out.println("Q) quit\n");
 		String choice = getUserInput("Please choose an option");
 		if (choice.equalsIgnoreCase("Q")) {
@@ -78,14 +82,16 @@ public class CampgroundCLI {
 				Integer.parseInt(choice) <= reserveSystem.listAllParks().size()) {
 			parkInfoScreen(choice);
 		} else {
-			System.out.println("\n*** " + choice + " is not a valid option ***\n");
+			System.out.println("\n*** not a valid option ***\n");
 		}
 	}
 
 	public void parkInfoScreen(String parkId) {
 		System.out.println("\n--------------------------------------------------");
 		System.out.println("\n---Park Information Screen---");
+
 		reserveSystem.parkInfoOutput(parkId);
+
 		System.out.println("\nSelect a command");
 		String choice = (String) menu.getChoiceFromOptions(PARK_MENU_OPTIONS);
 		switch (choice) {
@@ -93,51 +99,60 @@ public class CampgroundCLI {
 			campgroundScreen(parkId);
 		case PARK_RETURN_TO_PREVIOUS:
 			parkListScreen();
+		default:
+			parkListScreen();
 		}
 	}
 
 	public void campgroundScreen(String parkId) {
 		System.out.println("\n--------------------------------------------------");
 		System.out.println("\nPark Campgrounds");
+
 		reserveSystem.listCampNames(parkId);
+
 		System.out.println("\nSelect a command");
 		String choice = (String) menu.getChoiceFromOptions(CAMP_MENU_OPTIONS);
 		switch (choice) {
 		case CAMP_SEARCH_RESERVATION:
 			System.out.println("\n--------------------------------------------------");
 			System.out.println("\nSearch for Campground Reservation");
+
 			reserveSystem.listCampNames(parkId);
+
 			System.out.println();
 			Date fromDate = null;
 			Date toDate = null;
 			List<Site> siteList = new ArrayList<Site>();
+
 			String campgroundIndex = getUserInput("Which campground (enter 0 to cancel)?");
 			if (campgroundIndex.matches("\\d+") && Integer.parseInt(campgroundIndex) == 0) {
 				campgroundScreen(parkId);
 
-			} else if (campgroundIndex.matches("\\d+") && Integer.parseInt(campgroundIndex) > 0 &&
-					Integer.parseInt(campgroundIndex) <= reserveSystem.listAllCampgrounds(Long.parseLong(parkId)).size()) {
+			} else if (campgroundIndex.matches("\\d+") && Integer.parseInt(campgroundIndex) > 0 && Integer
+					.parseInt(campgroundIndex) <= reserveSystem.listAllCampgrounds(Long.parseLong(parkId)).size()) {
 
 			} else {
-				System.out.println("\n*** is not a valid option ***\n");
+				System.out.println("\n*** not a valid option ***\n");
 				campgroundScreen(parkId);
 			}
 			try {
 				formatDate.setLenient(false);
+
 				String userFromDate = getUserInput("What is the arrival date?");
 				fromDate = formatDate.parse(userFromDate);
 
 				String userToDate = getUserInput("What is the departure date?");
 				toDate = formatDate.parse(userToDate);
-				siteList = reserveSystem.listAvailableSites(Long.parseLong(campgroundIndex), fromDate, toDate);
+
+				siteList = reserveSystem.listAvailableSites(Integer.parseInt(campgroundIndex), fromDate, toDate,
+						parkId);
 
 			} catch (ParseException e) {
-				System.out.println("\n*** is not a valid option ***\n");
+				System.out.println("\n*** not a valid option ***\n");
 				campgroundScreen(parkId);
-
 			}
 			if (siteList.size() < 1) {
-				System.out.println("\n*** is not a valid option ***\n");
+				System.out.println("\n*** no available sites ***\n");
 				campgroundScreen(parkId);
 			}
 			siteSelectionScreen(siteList, parkId, fromDate, toDate);
@@ -153,21 +168,30 @@ public class CampgroundCLI {
 	public void siteSelectionScreen(List<Site> siteList, String parkId, Date fromDate, Date toDate) {
 		System.out.println("\n--------------------------------------------------");
 		System.out.println("\nResults Matching Your Search Criteria");
+
 		reserveSystem.listSites(siteList);
-		String siteId = getUserInput("Which site should be reserved (enter 0 to cancel)?");
-		if (siteId.matches("\\d+") && Integer.parseInt(siteId) == 0) {
+
+		Map<Long, String> checkNum = new HashMap<Long, String>();
+		for (int i = 0; i < siteList.size(); i++) {
+
+			checkNum.put(siteList.get(i).getSiteNumber(), "");
+		}
+		String siteNum = getUserInput("Which site should be reserved (enter 0 to cancel)?");
+		if (siteNum.matches("\\d+") && Integer.parseInt(siteNum) == 0) {
 			campgroundScreen(parkId);
 
-		} else if (siteId.matches("\\d+") && Integer.parseInt(siteId) > 0 &&
-				Integer.parseInt(siteId) <= siteList.size()) {
+		} else if (checkNum.keySet().contains(Long.parseLong(siteNum))) {
+
 		} else {
-			System.out.println("\n*** is not a valid option ***\n");
+			System.out.println("\n*** not a valid option ***\n");
 			campgroundScreen(parkId);
 		}
 		String reservationName = getUserInput("What name should the reservation be made under?");
-		reserveSystem.createReservation(Long.parseLong(siteId), reservationName, fromDate, toDate);
+
+		reserveSystem.createReservation(Long.parseLong(siteNum), reservationName, fromDate, toDate);
+
 		System.out.println("The reservation has been made and the confirmation id is " +
-				reserveSystem.returnReservationId(Long.parseLong(siteId), fromDate, toDate));
+				reserveSystem.returnReservationId(Long.parseLong(siteNum), fromDate, toDate));
 	}
 
 	@SuppressWarnings("resource")

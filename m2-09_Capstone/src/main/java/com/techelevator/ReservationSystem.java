@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.sql.DataSource;
 
@@ -27,15 +26,16 @@ import com.techelevator.campground.model.jdbc.JDBCParkDAO;
 import com.techelevator.campground.model.jdbc.JDBCReservationDAO;
 import com.techelevator.campground.model.jdbc.JDBCSiteDAO;
 
-public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, ReservationDAO {
+public class ReservationSystem {
 
 	private ParkDAO park;
 	private CampgroundDAO camp;
 	private SiteDAO site;
 	private ReservationDAO reservation;
 	private JdbcTemplate jdbcTemplate;
+	private Long campgroundId;
 	private BigDecimal siteCost;
-	DateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
+	private DateFormat formatDate = new SimpleDateFormat("MM/dd/yyyy");
 
 	public ReservationSystem(DataSource dataSource) {
 		this.park = new JDBCParkDAO(dataSource);
@@ -45,41 +45,42 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-	@Override
-	public void createReservation(Long siteId, String customerName, Date fromDate, Date toDate) {
+	public void createReservation(Long siteNum, String customerName, Date fromDate, Date toDate) {
+		List<Site> siteList = site.listAvailableSites(campgroundId, fromDate, toDate);
+		Map<Long, Long> numToId = new HashMap<Long, Long>();
+
+		for (int i = 0; i < siteList.size(); i++) {
+			numToId.put(siteList.get(i).getSiteNumber(), siteList.get(i).getSiteId());
+		}
+		Long siteId = numToId.get(siteNum);
 		reservation.createReservation(siteId, customerName, fromDate, toDate);
 	}
 
-	@Override
-	public List<Site> listAvailableSites(Long campgroundIndex, Date fromDate, Date toDate) {
+	public List<Site> listAvailableSites(int campgroundIndex, Date fromDate, Date toDate, String parkId) {
 		List<Site> confirmSite = new ArrayList<Site>();
-		Long campgroundId = null;
+		campgroundId = listAllCampgrounds(Long.parseLong(parkId)).get(campgroundIndex - 1).getCampgroundId();
 
-		siteCost = calculateCost(campgroundIndex, fromDate, toDate);
+		siteCost = calculateCost(campgroundId, fromDate, toDate);
 		if (siteCost.compareTo(new BigDecimal("0")) == 1) {
-			confirmSite = site.listAvailableSites(campgroundIndex, fromDate, toDate);
+			confirmSite = site.listAvailableSites(campgroundId, fromDate, toDate);
 		}
 		return confirmSite;
 	}
 
-	@Override
 	public List<Campground> listAllCampgrounds(Long parkId) {
 		return camp.listAllCampgrounds(parkId);
 	}
 
-	@Override
 	public List<Park> listAllParks() {
 		return park.listAllParks();
 	}
 
-	@Override
 	public Park displayParkInfo(Long parkId) {
 		return park.displayParkInfo(parkId);
 	}
 
 	public BigDecimal calculateCost(Long campgroundId, Date fromDate, Date toDate) {
 		BigDecimal cost;
-
 		Long dateRange = (toDate.getTime() - fromDate.getTime()) / 86400000;
 
 		SqlRowSet fee = jdbcTemplate.queryForRowSet("SELECT daily_fee FROM campground WHERE campground_id = ?",
@@ -87,7 +88,6 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		fee.next();
 
 		cost = fee.getBigDecimal(1).multiply(new BigDecimal(dateRange));
-
 		return cost.setScale(2);
 	}
 
@@ -107,11 +107,10 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 	public void parkInfoOutput(String parkSelect) {
 		Long parkId = Long.parseLong(parkSelect);
 		Park parkInfo = displayParkInfo(parkId);
-		String establishDate = null;
-		establishDate = formatDate.format(parkInfo.getEstablishDate());
-		StringBuilder description = new StringBuilder(parkInfo.getDescription());
+		String establishDate = formatDate.format(parkInfo.getEstablishDate());
 		String area = String.format("%,d", parkInfo.getArea());
 		String visitors = String.format("%,d", parkInfo.getVisitors());
+		StringBuilder description = new StringBuilder(parkInfo.getDescription());
 
 		System.out.println(parkInfo.getName() + " National Park");
 		System.out.format("%-16s %s %s", "Location:", parkInfo.getLocation(), "\n");
@@ -119,6 +118,7 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		System.out.format("%-16s %s %s", "Area:", area + " sq km", "\n");
 		System.out.format("%-16s %s %s", "Annual Visitors:", visitors, "\n");
 		System.out.println();
+
 		int i = 0;
 		while ((i = description.indexOf(" ", i + 80)) != -1) {
 			description.replace(i, i + 1, "\n");
@@ -130,6 +130,7 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		Long parkId = Long.parseLong(parkSelect);
 		Park parkInfo = displayParkInfo(parkId);
 		List<Campground> camps = camp.listAllCampgrounds(parkId);
+
 		Map<String, String> months = new HashMap<String, String>();
 		months.put("01", "January");
 		months.put("02", "February");
@@ -143,6 +144,7 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		months.put("10", "October");
 		months.put("11", "November");
 		months.put("12", "December");
+
 		System.out.println(parkInfo.getName() + " National Park Campgrounds\n");
 		System.out.format("%-4s %-32s %-11s %-11s %s %s", "", "Name", "Open", "Close", "Daily Fee", "\n");
 
@@ -151,7 +153,6 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 				System.out.format("%-4s %-32s %-11s %-11s %s %s", "#" + (i + 1), camps.get(i).getName(),
 						months.get(camps.get(i).getOpenFromMM()), months.get(camps.get(i).getOpenToMM()),
 						"$" + camps.get(i).getDailyFee().setScale(2), "\n");
-
 			}
 		} else {
 			System.out.println("*** No Results ***");
@@ -163,8 +164,10 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 		String utilityNa;
 		String maxRvLength;
 		String accessible;
+
 		System.out.format("%-11s %-11s %-16s %-16s %-11s %s %s", "Site No.", "Max Occup.", "Accessible?",
 				"Max RV Length", "Utility", "Cost", "\n");
+
 		if (sites.size() > 0) {
 			for (int i = 0; i < sites.size(); i++) {
 				if (sites.get(i).isUtilities()) {
@@ -174,8 +177,7 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 				}
 				if (sites.get(i).getMaxRVLength() == 0) {
 					maxRvLength = "N/A";
-				}	
-				else {
+				} else {
 					maxRvLength = sites.get(i).getMaxRVLength().toString();
 				}
 				if (sites.get(i).isAccessible()) {
@@ -184,8 +186,7 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 					accessible = "No";
 				}
 				System.out.format("%-11s %-11s %-16s %-16s %-11s %s %s", sites.get(i).getSiteNumber(),
-						sites.get(i).getMaxOccupancy(), accessible, maxRvLength,
-						utilityNa, "$" + siteCost, "\n");
+						sites.get(i).getMaxOccupancy(), accessible, maxRvLength, utilityNa, "$" + siteCost, "\n");
 			}
 		} else {
 			System.out.println("*** No Results ***");
@@ -198,12 +199,6 @@ public class ReservationSystem implements ParkDAO, CampgroundDAO, SiteDAO, Reser
 				toDate, fromDate);
 		confirmation.next();
 		return confirmation.getLong(1);
-	}
-
-	@SuppressWarnings("resource")
-	private String getUserInput(String prompt) {
-		System.out.print(prompt + " >>> ");
-		return new Scanner(System.in).nextLine();
 	}
 
 }

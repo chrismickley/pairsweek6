@@ -17,9 +17,9 @@ import com.techelevator.campground.model.Park;
 
 public class ReservationSystemTest extends DAOIntegrationTest {
 
-	ReservationSystem testing;
-	JdbcTemplate jdbcTemplate;
-	DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+	private ReservationSystem testing;
+	private JdbcTemplate jdbcTemplate;
+	private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Before
 	public void setUp() throws Exception {
