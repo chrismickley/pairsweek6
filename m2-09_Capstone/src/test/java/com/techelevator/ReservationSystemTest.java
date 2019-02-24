@@ -51,7 +51,7 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 
 		assertEquals(new BigDecimal("25.00"), testing.calculateCost(nextCampgroundId, fromDate, toDate));
 	}
-	
+
 	@Test
 	public void listAllParksTest() {
 		jdbcTemplate = new JdbcTemplate(getDataSource());
@@ -62,5 +62,16 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 		List<Park> parkList = testing.listAllParks();
 
 		assertEquals(result.getInt("total"), parkList.size());
+	}
+
+	@Test
+	public void getReservationId() throws Exception {
+		Date fromDate = formatDate.parse("1986-01-16");
+		Date toDate = formatDate.parse("1986-01-17");
+		jdbcTemplate = new JdbcTemplate(getDataSource());
+		jdbcTemplate.execute(
+				"INSERT INTO reservation(reservation_id, site_id, name, from_date, to_date) VALUES (2100000000, 47, 'Jimmy', '1986-01-16', '1986-01-17')");
+		Long resId = (long) 2100000000;
+		assertEquals(resId, testing.returnReservationId(47, fromDate, toDate));
 	}
 }

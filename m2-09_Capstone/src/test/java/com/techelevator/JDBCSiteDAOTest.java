@@ -47,7 +47,7 @@ public class JDBCSiteDAOTest extends DAOIntegrationTest {
 		Long nextSiteId = nextId.getLong(1) + 1;
 		Long nextSiteIdPlusOne = nextSiteId + 1;
 
-		nextId = jdbcTemplate.queryForRowSet("SELECT count(*) FROM reservation");
+		nextId = jdbcTemplate.queryForRowSet("SELECT MAX(reservation_id) FROM reservation");
 		nextId.next();
 		Long nextReservationId = nextId.getLong(1) + 1;
 
