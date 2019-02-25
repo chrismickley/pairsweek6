@@ -179,16 +179,20 @@ public class CampgroundCLI {
 		if (siteNum.matches("\\d+") && Long.parseLong(siteNum) == 0) {
 			campgroundScreen();
 
-		} else if (reserveSystem.getSiteNumToId().keySet().contains(Long.parseLong(siteNum))) {
+		} else if (siteNum.matches("\\d+") && reserveSystem.getSiteNumToId().keySet().contains(Long.parseLong(siteNum))) {
 
 		} else {
 			System.out.println("\n*** not a valid option ***\n");
 			campgroundScreen();
 		}
 		String reservationName = getUserInput("What name should the reservation be made under?");
-
-		reserveSystem.createReservation(Long.parseLong(siteNum), reservationName, fromDate, toDate);
-
+		if (reservationName.matches("(\\w+\\s*)+")) {
+			reserveSystem.createReservation(Long.parseLong(siteNum), reservationName, fromDate, toDate);
+		}
+		else {
+			System.out.println("\n*** not a valid name ***\n");
+			campgroundScreen();
+		}
 		System.out.println("The reservation has been made and the confirmation id is " +
 				reserveSystem.getReservationId(Long.parseLong(siteNum), fromDate, toDate));
 	}
