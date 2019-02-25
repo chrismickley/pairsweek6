@@ -27,7 +27,7 @@ public class JDBCSiteDAO implements SiteDAO {
 				"JOIN campground ON site.campground_id = campground.campground_id " + "WHERE site.campground_id = ? " +
 				"AND site_id NOT IN " + "(SELECT site.site_id FROM site " +
 				"JOIN reservation ON reservation.site_id = site.site_id " +
-				"WHERE (? >= reservation.from_date AND ? < reservation.to_date) OR (? > reservation.from_date AND ? <= reservation.to_date)) " +
+				"WHERE (? >= reservation.from_date AND ? <= reservation.to_date) OR (? >= reservation.from_date AND ? <= reservation.to_date)) " +
 				"ORDER BY daily_fee " + "LIMIT 5;";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(name, campgroundId, fromDate, fromDate, toDate, toDate);
 		while (results.next()) {
