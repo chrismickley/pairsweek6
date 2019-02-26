@@ -195,6 +195,7 @@ public class CampgroundCLI {
 		}
 		System.out.println("The reservation has been made and the confirmation id is " +
 				reserveSystem.getReservationId(Long.parseLong(siteNum), fromDate, toDate));
+				parkListScreen();
 	}
 
 	@SuppressWarnings("resource")

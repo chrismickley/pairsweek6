@@ -6,14 +6,11 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-
-import com.techelevator.campground.model.Park;
 
 public class ReservationSystemTest extends DAOIntegrationTest {
 
@@ -50,18 +47,6 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 						nextCampgroundId + ", " + nextParkId + ", 'Some Park', '01', '11', 25.00)");
 
 		assertEquals(new BigDecimal("25.00"), testing.calculateCost(nextCampgroundId, fromDate, toDate));
-	}
-
-	@Test
-	public void listAllParksTest() {
-		jdbcTemplate = new JdbcTemplate(getDataSource());
-
-		SqlRowSet result = jdbcTemplate.queryForRowSet("SELECT count(*) as total from park");
-		result.next();
-
-		List<Park> parkList = testing.listAllParks();
-
-		assertEquals(result.getInt("total"), parkList.size());
 	}
 
 	@Test
@@ -104,8 +89,9 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 				"INSERT INTO reservation(reservation_id, site_id, name, from_date, to_date, create_date) VALUES(" +
 						nextReservationId + ", " + nextSiteId +
 						",  'Proud Family', '1986-01-15', '1986-01-18', '2019-02-20')");
-
-		testing.convertParkIndexToId(nextParkId.toString());
+		
+		Long parkIndex = nextParkId;
+		testing.convertParkIndexToId(parkIndex.toString());
 		testing.listAvailableSites("1", fromDate, toDate);
 		
 		assertEquals(nextReservationId, testing.getReservationId((long) 1, fromDate, toDate));
@@ -151,4 +137,5 @@ public class ReservationSystemTest extends DAOIntegrationTest {
 //				"INSERT INTO site(site_id, campground_id, site_number, max_occupancy, accessible, max_rv_length, utilities) VALUES(" +
 //						nextSiteIdPlusTre + ", " + nextCampgroundId + ",  27, 39, false, 44, false)");
 //		}
+	
 }
